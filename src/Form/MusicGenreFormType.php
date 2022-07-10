@@ -12,32 +12,16 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class MusicFormType extends AbstractType
+class MusicGenreFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Наименование'
-            ])
-            ->add('artist', TextType::class,[
-                'label' => 'Исполнитель'
-            ])
-            ->add('album', TextType::class,[
-                'label' => 'Альбом'
-            ])
-            ->add('wallpaper', TextType::class,[
-                'label' => 'Обложка'
-            ])
+                'label' => 'Наименование',
+            ])               
             ->add('submit', SubmitType::class, [
                 'label' => 'Сохранить'
-            ])
-            ->add('genre', EntityType::class, [
-                'class' => MusicGenre::class,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('m');
-                },
-                'choice_label' => 'name',
             ])
         ;
     }
@@ -45,7 +29,7 @@ class MusicFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Music::class,
+            'data_class' => MusicGenre::class,
         ]);
     }
 }
