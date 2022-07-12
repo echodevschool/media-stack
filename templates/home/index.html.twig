@@ -11,7 +11,14 @@
 <div class="example-wrapper">
 
     {% for music in musics %}
-        <p>{{ music.name }} - {{ music.genre.name ?? '' }}</p>
+       <div>
+               <p>{{ music.name }} - {{ music.genre.name ?? '' }}</p>
+       </div>
+            {% if music.wallpaper %}
+                    <div>
+                            <img style="max-width: 100px;" src="{{ asset('uploads/music_wallpaper/'~music.wallpaper) }}">
+                    </div>
+            {% endif %}
     {% endfor %}
         <br>
         {{ form(form) }}

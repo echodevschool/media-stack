@@ -7,9 +7,12 @@ use App\Form\MusicFormType;
 use App\Repository\MusicRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class HomeController extends AbstractController
 {
@@ -21,20 +24,37 @@ class HomeController extends AbstractController
     }
 
     #[Route('/', name: 'app_home')]
-    public function index(Request $request): Response
+    public function index(Request $request, SluggerInterface $slugger): Response
     {
         $entityManager = $this->managerRegistry->getManager();
         $musics = $entityManager->getRepository(Music::class)->findAll();
 
         $music = new Music();
         $form = $this->createForm(MusicFormType::class, $music);
-        //$request->query->get('key'); get
-        //$request->request->get('key'); post
-        //$request->get('key'); get -> post
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $file */
+            $file = $form->get('m_wallpeper')->getData();
+            if ($file) {
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+                try {
+                    $file->move(
+                        $this->getParameter('music_wallpaper'),
+                        $newFilename
+                    );
+                } catch (FileException $exception) {
+                    dd($exception->getMessage());
+                }
+
+                $music->setWallpaper($newFilename);
+            }
             $entityManager->persist($music);
             $entityManager->flush();
+
+            return $this->redirectToRoute('app_home');
         }
 
 
