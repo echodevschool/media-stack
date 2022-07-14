@@ -25,6 +25,9 @@ class MusicFormType extends AbstractType
             ->add('artist', TextType::class,[
                 'label' => 'Исполнитель'
             ])
+            ->add('file', TextType::class,[
+                'label' => 'Файл'
+            ])            
             ->add('album', TextType::class,[
                 'label' => 'Альбом'
             ])
