@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\Music;
 use App\Form\MusicFormType;
 use App\Repository\MusicRepository;
+use App\Entity\MusicGenre;
+use App\Form\MusicGenreFormType;
+use App\Repository\MusicGenreRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -64,4 +67,21 @@ class HomeController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+
+    #[Route('/genre', name: 'app_genre')]
+    public function musicGenre(Request $request): Response
+    {
+        $entityManager = $this->managerRegistry->getManager();
+        $musicGenre = $entityManager->getRepository(MusicGenre::class)->findAll();
+
+        $genre = new MusicGenre();
+        $form = $this->createForm(MusicGenreFormType::class, $genre);
+        $form->handleRequest($request);
+        
+        return $this->render('genre/', [
+            'controller_name' => 'HomeController',
+            'genre' => $musicGenre,
+            'form' => $form->createView()
+        ]);
+    }    
 }
